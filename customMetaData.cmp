@@ -1,0 +1,47 @@
+<aura:component controller ="MetadataController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+    <aura:attribute name="metdataRecords" type="Object" />
+    
+    <div class="slds-col">  
+        <div class="slds-scrollable_y" style="height:100%;">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                <thead>
+                    <tr class="slds-text-title_caps">
+                         <th scope="col">
+                            <div class="slds-truncate" title="Id">Id</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Name">Name</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <aura:iteration items="{!v.metdataRecords}" var="meta">
+                        <tr>
+                            <td data-label="Id">
+                                <div class="slds-truncate" title="">{!meta.Id}</div>
+                            </td>
+                            <td data-label="Name">
+                                <div class="slds-truncate" title="">{!meta.Name__c}</div>
+                            </td>
+                        </tr>
+                    </aura:iteration>
+                </tbody>
+            </table>
+        </div></div>
+
+        <div class="slds-truncate slds-form-element"> 
+            <lightning:input aura:id="fieldId" type="Text" name="input1" placeholder="Enter the Name.." required="true" />
+        </div>
+
+    <div class="slds-col slds-size_6-of-12 slds-medium-size_6-of-12 slds-p-top_small slds-align_absolute-center">
+        <lightning:button variant="Brand" type="submit" onclick="{!c.savebutn}" name="save" label="Save" />
+    </div>
+    <div class="loading_wheel">
+        <aura:if isTrue="{!v.spinner}">
+            <lightning:spinner class="spins" size="medium" variant="brand" alternativeText="Loading" />
+        </aura:if>
+    </div>
+</aura:component>
