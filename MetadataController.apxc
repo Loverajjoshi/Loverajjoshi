@@ -1,0 +1,48 @@
+public class MetadataController implements Metadata.DeployCallback  {
+    @AuraEnabled
+    public static  List<Opportunity_Metadata__mdt> fetchMetdata(){
+        return [Select id, Name__c from Opportunity_Metadata__mdt];
+    }
+    
+     @AuraEnabled
+    public static String createdMetaData(String metadataRecord){
+        System.debug('metadataRecord' + metadataRecord);
+        try{
+            String mtname ='Opportunity_Metadata__mdt';
+			String recordDevName =  metadataRecord.replaceAll(' ', '_');
+  			Metadata.CustomMetadata customMetadata =  new Metadata.CustomMetadata();
+            customMetadata.fullName =  mtname + '.' + recordDevName ;
+			customMetadata.label = metadataRecord;
+            
+            // Add all the field values 
+            Metadata.CustomMetadataValue customField = new Metadata.CustomMetadataValue();
+            customField.field = 'Name__c';
+            customField.value = metadataRecord;
+            customMetadata.values.add(customField);
+            
+            Metadata.DeployContainer mdContainer = new Metadata.DeployContainer();
+            mdContainer.addMetadata(customMetadata);
+            
+            // Setup deploy callback, MyDeployCallback implements
+            // the Metadata.DeployCallback interface 
+            MetadataController callback = new MetadataController();
+            
+            // Enqueue custom metadata deployment
+            // jobId is the deployment ID
+            Id jobId = Metadata.Operations.enqueueDeployment(mdContainer, callback);
+            return jobId;
+            
+        }catch(Exception ex){
+            return 'error'; 
+        } 
+    }
+    //Interfae Method
+     public void handleResult(Metadata.DeployResult result, Metadata.DeployCallbackContext context) {
+        if (result.status == Metadata.DeployStatus.Succeeded) {
+            System.debug('success: '+ result);
+        } else {
+            // Deployment was not successful
+            System.debug('fail: '+ result);
+        }
+    }
+}
